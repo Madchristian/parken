@@ -24,3 +24,6 @@ RUN echo 'Header set Access-Control-Allow-Headers "Content-Type, Authorization, 
 
 # Clean up
 RUN rm -rf /tmp/parken
+
+# Start Apache
+CMD ["httpd-foreground"]
