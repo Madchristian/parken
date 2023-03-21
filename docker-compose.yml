@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  web:
+    image: httpd:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/usr/local/apache2/htdocs/
+    restart: always
