@@ -12,7 +12,7 @@ WORKDIR /tmp
 RUN git clone git@github.com:Madchristian/parken.git
 
 # Copy the files from the temporary directory to the target directory
-COPY parken/* /usr/local/apache2/htdocs/
+RUN cp -r /tmp/parken/* /usr/local/apache2/htdocs/
 
 # Clean up
 RUN rm -rf /tmp/parken
