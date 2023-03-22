@@ -22,6 +22,7 @@ RUN echo 'AddType text/css .css' >> /usr/local/apache2/conf/httpd.conf
 RUN echo 'Header set Access-Control-Allow-Origin "*"' >> /usr/local/apache2/conf/httpd.conf
 RUN echo 'Header set Access-Control-Allow-Methods "GET,POST,OPTIONS,DELETE,PUT"' >> /usr/local/apache2/conf/httpd.conf
 RUN echo 'Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"' >> /usr/local/apache2/conf/httpd.conf
+RUN echo 'Header set Access-Control-Allow-Origin "https://parken.cstrube.de"' >> /usr/local/apache2/conf/httpd.conf
 
 # Clean up
 RUN rm -rf /tmp/parken
