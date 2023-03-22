@@ -9,7 +9,8 @@ RUN chmod 600 /root/.ssh/id_rsa
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 # Clone the Git repository into a temporary directory
 WORKDIR /tmp
-RUN git clone --force git@github.com:Madchristian/parken.git
+RUN rm -rf parken || true
+RUN git clone -v git@github.com:Madchristian/parken.git
 
 # Copy the files from the temporary directory to the target directory
 RUN cp -r /tmp/parken/* /usr/local/apache2/htdocs/

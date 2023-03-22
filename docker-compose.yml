@@ -8,3 +8,7 @@ services:
     ports:
       - "80:80"
     restart: always
+    volumes:
+      - webserver:/usr/local/apache2/
+volumes:
+  webserver:
