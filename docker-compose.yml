@@ -2,9 +2,7 @@ version: '3'
 
 services:
   web:
-    build: 
-      context: . 
-      dockerfile: Dockerfile 
+    image: webserver:latest 
     ports:
       - "80:80"
     restart: always
