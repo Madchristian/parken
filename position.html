@@ -9,7 +9,10 @@
     <script src="./js/bootstrap.min.js"></script>
     <script src="./node_modules/jquery/dist/jquery.min.js"></script>
 
-
+  
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" rel="stylesheet">
+      <!-- Weitere Head-Tags... -->
+    
   </head>
   <body>
     <div class="container-fluid">
@@ -51,9 +54,19 @@
           </nav>
 
 
-          <button onclick="getLocation()">Get Location</button>
-  
-          <button onclick="document.getElementById('licensePlateInput').click();">Kennzeichen aufnehmen</button>
+          <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+            <div class="text-center d-flex flex-column justify-content-center">
+              <button onclick="getLocation()" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100px; width:100px; border-radius:50%; background-color:#007bff; color:white; border:none;">
+                <i class="fas fa-map-marker-alt" style="font-size:30px;"></i>
+                <div style="font-size:14px; margin-top:5px;">GPS</div>
+              </button>
+              <div class="my-4"></div>
+              <button class="btn btn-secondary btn-lg" onclick="document.getElementById('licensePlateInput').click();">Kennzeichen aufnehmen</button>
+              <input id="licensePlateInput" type="file" accept="image/*" capture="camera" style="display:none;" onchange="processImage(this)">
+            </div>
+          </div>
+          
+          
           <input id="licensePlateInput" type="file" accept="image/*" capture="camera" style="display:none;" onchange="processImage(this)">
     </body>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>
@@ -61,28 +74,28 @@
     <script>
       async function processImage(input) {
       const imageFile = input.files[0];
-          
+
       // Lade das aufgenommene Foto mit OpenCV
       const img = await cv.imreadAsync(imageFile);
-          
+
       // Konvertiere das Bild in Graustufen
       const gray = await cv.cvtColorAsync(img, cv.COLOR_RGBA2GRAY);
-          
+
       // Erhöhe die Konturen
       const edges = await cv.CannyAsync(gray, 50, 200, 3, false);
-          
+
       // Konvertiere das Bild zurück in ein ImageData-Objekt
       const imageData = await cv.imencodeAsync('.jpg', edges);
-          
+
       // Wende die OCR auf das vorverarbeitete Bild an
       const result = await Tesseract.recognize(imageData.data, 'deu', { logger: console.log });
-          
+
       // Speichere das erkannte Kennzeichen zusammen mit den GPS-Daten
       const licensePlate = result.data.text.trim();
       console.log('Erkanntes Kennzeichen:', licensePlate);
       getLocation(licensePlate);
     }
-    
+
     
       // Diese Funktion sollte die erkannten Daten (z.B. Kennzeichen und GPS-Daten) an Ihren Server senden, um sie in der MongoDB-Datenbank zu speichern.
     async function saveData(licensePlate, latitude, longitude) {
