@@ -3,11 +3,15 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Parkplatz</title>
+    <title>Position</title>
     <!-- Verlinken Sie die Bootstrap-Dateien -->
     <link rel="stylesheet" href="./css/bootstrap.min.css">
     <script src="./js/bootstrap.min.js"></script>
     <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>
+    <script src="./js/opencv.js"></script>
+    <script src="./src/js/position.js"></script>
+    <script async src="https://docs.opencv.org/master/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
 
   
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" rel="stylesheet">
@@ -70,7 +74,6 @@
           <input id="licensePlateInput" type="file" accept="image/*" capture="camera" style="display:none;" onchange="processImage(this)">
     </body>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>
-    <script src="./js/position.js"></script>
     <script>
       async function processImage(input) {
       const imageFile = input.files[0];
@@ -100,7 +103,7 @@
       // Diese Funktion sollte die erkannten Daten (z.B. Kennzeichen und GPS-Daten) an Ihren Server senden, um sie in der MongoDB-Datenbank zu speichern.
     async function saveData(licensePlate, latitude, longitude) {
       // Definieren Sie die URL für Ihren API-Endpunkt
-      const apiUrl = "https://parken.cstrube.de/apiv3/save-data";
+      const apiUrl = "https://api.cstrube.de/apiv3/save-data";
 
       // Erstellen Sie ein Objekt mit den Daten, die an Ihren Server gesendet werden sollen
       const data = {
