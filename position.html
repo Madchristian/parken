@@ -3,20 +3,16 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Position</title>
+    <title>Parkplatz</title>
     <!-- Verlinken Sie die Bootstrap-Dateien -->
     <script src="./node_modules/jquery/dist/jquery.min.js"></script>
-    <link rel="stylesheet" href="./css/bootstrap.min.css">
-    <script src="./js/bootstrap.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>
     <script src="./src/js/position.js"></script>
-    <script async src="https://docs.opencv.org/master/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <script src="./js/bootstrap.min.js"></script>
+   
 
-  
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" rel="stylesheet">
-      <!-- Weitere Head-Tags... -->
-    
+
   </head>
   <body>
     <div class="container-fluid">
@@ -58,49 +54,48 @@
           </nav>
 
 
-          <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-            <div class="text-center d-flex flex-column justify-content-center">
-              <button onclick="getLocation()" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100px; width:100px; border-radius:50%; background-color:#007bff; color:white; border:none;">
-                <i class="fas fa-map-marker-alt" style="font-size:30px;"></i>
-                <div style="font-size:14px; margin-top:5px;">GPS</div>
-              </button>
-              <div class="my-4"></div>
-              <button class="btn btn-secondary btn-lg" onclick="document.getElementById('licensePlateInput').click();">Kennzeichen aufnehmen</button>
-              <input id="licensePlateInput" type="file" accept="image/*" capture="camera" style="display:none;" onchange="processImage(this)">
-            </div>
-          </div>
-          
-          
+          <button onclick="getLocation()">Get Location</button>
+  
+          <button onclick="document.getElementById('licensePlateInput').click();">Kennzeichen aufnehmen</button>
           <input id="licensePlateInput" type="file" accept="image/*" capture="camera" style="display:none;" onchange="processImage(this)">
     </body>
 
     <script>
-async function processImage(input) {
-  const imageFile = input.files[0];
-  const img = await cv.imreadAsync(imageFile);
-  const gray = await cv.cvtColorAsync(img, cv.COLOR_RGBA2GRAY);
-  const edges = await cv.CannyAsync(gray, 50, 200, 3, false);
-  const imageData = await cv.imencodeAsync('.jpg', edges);
-  const result = await Tesseract.recognize(imageData.data, 'deu', { logger: console.log });
-  const licensePlate = result.data.text.trim();
-  getLocation(licensePlate);
-}
+      async function processImage(input) {
+        const imageFile = input.files[0];
+    
+        // Führe die OCR auf dem aufgenommenen Foto aus
+        const result = await Tesseract.recognize(imageFile, 'deu', { logger: console.log });
+    
+        // Speichere das erkannte Kennzeichen zusammen mit den GPS-Daten
+        const licensePlate = result.data.text.trim();
+        console.log('Erkanntes Kennzeichen:', licensePlate);
+        getLocation(licensePlate);
+      }
+    
+      // Diese Funktion sollte die erkannten Daten (z.B. Kennzeichen und GPS-Daten) an Ihren Server senden, um sie in der MongoDB-Datenbank zu speichern.
+    async function saveData(licensePlate, latitude, longitude) {
+      // Definieren Sie die URL für Ihren API-Endpunkt
+      const apiUrl = "https://parken.cstrube.de/apiv3/save-data";
 
-async function saveData(licensePlate, latitude, longitude) {
-  const apiUrl = "https://parken.cstrube.de/apiv3/save-data";
-  const data = {
-    licensePlate,
-    latitude,
-    longitude
-  };
-  try {
-    const response = await fetch(apiUrl, {
+      // Erstellen Sie ein Objekt mit den Daten, die an Ihren Server gesendet werden sollen
+      const data = {
+        licensePlate: licensePlate,
+        latitude: latitude,
+        longitude: longitude
+      };
+
+      try {
+        // Senden Sie die Daten an Ihren API-Endpunkt
+      const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(data)
     });
+
+    // Überprüfen Sie den Status des Requests und verarbeiten Sie die Antwort
     if (response.ok) {
       const jsonResponse = await response.json();
       console.log("Data saved successfully:", jsonResponse);
@@ -108,27 +103,29 @@ async function saveData(licensePlate, latitude, longitude) {
       console.error("Error saving data:", response.status, response.statusText);
     }
   } catch (error) {
-    console.error(error);
+    console.error("Error sending data to server:", error);
   }
 }
 
-function getLocation(licensePlate) {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(position => showPosition(position, licensePlate));
-  } else {
-    alert("Geolocation is not supported by this browser.");
-  }
-}
-
-function showPosition(position, licensePlate) {
-  const latitude = position.coords.latitude;
-  const longitude = position.coords.longitude;
-  console.log("Latitude: " + latitude + ", Longitude: " + longitude);
-  saveData(licensePlate, latitude, longitude);
-}
-
+    
+      function getLocation(licensePlate) {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(position => showPosition(position, licensePlate));
+        } else {
+          alert("Geolocation is not supported by this browser.");
+        }
+      }
+    
+      function showPosition(position, licensePlate) {
+        // Hier können Sie die Position an Ihren Bot senden
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+        console.log("Latitude: " + latitude + ", Longitude: " + longitude);
+    
+        // Speichere die Daten (Kennzeichen, Breitengrad und Längengrad)
+        saveData(licensePlate, latitude, longitude);
+      }
     </script>
     
 
 </html>
-
