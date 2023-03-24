@@ -5,5 +5,7 @@ services:
     image: webserver:latest 
     ports:
       - "80:80"
-
+    volumes:
+      - ./:/usr/local/apache2/htdocs/
+      - ./conf/httpd.conf:/usr/local/apache2/conf/httpd.conf
     restart: always

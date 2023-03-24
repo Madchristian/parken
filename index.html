@@ -5,9 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Statiskik</title>
     <meta charset="UTF-8">
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.4/dist/tesseract.min.js"></script>
+    <script>
+      // fetch the contents of the header.html file
+      fetch('header.html')
+        .then(response => response.text())
+        .then(html => {
+          // insert the contents of the header.html file into the page
+          const headerElement = document.getElementById('header');
+          headerElement.innerHTML = html;
+        });
+    </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://unpkg.com/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script type="module" src="./src/js/main.js"></script>
     <link rel="stylesheet" href="./css/bootstrap.css">
       
