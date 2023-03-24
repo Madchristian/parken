@@ -1,10 +1,12 @@
 {
   "dependencies": {
     "@popperjs/core": "^2.11.6",
-    "bootstrap": "^5.3.0-alpha1",
+    "bootstrap": "^5.2.3",
+    "chokidar": "^3.5.3",
+    "esm": "^3.2.25",
+    "fsevents": "^2.3.2",
     "jquery": "^3.6.4",
     "opencv-build": "^0.1.9",
-    "opencv4nodejs": "^5.6.0",
     "qrcode": "^1.5.1"
   },
   "name": "parken_webseite",

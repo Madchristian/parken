@@ -3,42 +3,46 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Assistant</title>
-    <!-- Verlinken Sie die Bootstrap-Dateien -->
+    <title>Statiskik</title>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.4/dist/tesseract.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script type="module" src="./src/js/main.js"></script>
     <link rel="stylesheet" href="./css/bootstrap.css">
-    <script src="./js/bootstrap.js"></script>
       
   </head>
   <body class="bg-dark">
     <div class="container-fluid">
       <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#">Navbar</a>
+          <a class="navbar-brand" href="#">cstrube.de</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                <a class="nav-link active" aria-current="page" href="index.html">Statistik</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="parkplatz.html">Parkplatz</a>
+                <a class="nav-link" href="parkplatz.html">Übersicht</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="parken.html">Parken</a>
               </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Links
                 </a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Action</a></li>
+                  <li><a class="dropdown-item" href="#">Schlüsseltresor</a></li>
                   <li><a class="dropdown-item" href="#">Another action</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" href="#">Something else here</a></li>
                 </ul>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="position.html">Position</a>
-              </li>
+
             </ul>
             <form class="d-flex" role="search">
               <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
@@ -47,8 +51,8 @@
           </div>
         </div>
       </nav>
-      <h1>Hello, world!</h1>
-      <p>This is a Test example.</p>
+      <h1>Parkplatz Manager</h1>
+      <p>Es gibt auch eine interaktive Karte, die die verfügbaren Parkplätze in der Umgebung anzeigt und die Möglichkeit bietet, diese zu reservieren. Nutzer können auch ihre bevorzugten Parkplätze speichern und verwalten sowie ihre Reservierungshistorie einsehen. Die Webseite bietet auch eine einfache Möglichkeit für Parkplatzbetreiber, ihre Parkplätze auf der Plattform anzubieten und zu verwalten.</p>
     </div>
   </body>
 </html>

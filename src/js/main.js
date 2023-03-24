@@ -1,50 +1,50 @@
-// Main.js
-
-import { getLocation } from './position.js';
-import { scanLicensePlate } from './licensePlate.js';
-import { scanQRCodeHandler } from './scanqrcodehandler.js';
+// main.js
+import { getLocation } from './positionandsave.js';
 import { showSpinner, hideSpinner } from './spinner.js';
-import { openCamera } from './position.js';
-import { toggleNav } from './navbar.js';
-
-document.getElementById('getLocationButton').addEventListener('click', async () => {
-try {
-await getLocation();
-} catch (error) {
-console.error(error);
-}
-});
-
-document.getElementById('scanLicensePlateButton').addEventListener('click', async () => {
-try {
-await scanLicensePlate();
-} catch (error) {
-console.error(error);
-}
-});
-
-document.getElementById('scanQRCodeButton').addEventListener('click', async () => {
-try {
-await scanQRCodeHandler();
-} catch (error) {
-console.error(error);
-}
-});
-
-document.getElementById('openCameraButton').addEventListener('click', async () => {
-try {
-await openCamera();
-} catch (error) {
-console.error(error);
-}
-});
-
-document.getElementById('toggleNavButton').addEventListener('click', () => {
-toggleNav();
-});
-
+import { scanQRCodeHandler} from './scanqrcodehandler.js';
+import { scanImage } from './scanlicenseplate.js';
+export const fileInput = document.getElementById('licensePlateInput');
+export {
+  getLocation,
+  showSpinner,
+  hideSpinner,
+  scanQRCodeHandler
+};
 function init() {
-console.log('Init');
-}
+    document.getElementById('positionButton').addEventListener('click', async () => {
+      try {
+        await getLocation('');
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  
+    document.getElementById('scanLicensePlateButton').addEventListener('click', async () => {
+      fileInput.addEventListener('change', async () => {
+        try {
+          await scanImage();
+        } catch (error) {
+          console.error(error);
+        }
+      });
+    }); // hier fehlte eine Klammer
+  
+    document.getElementById('scanLicensePlateButton').addEventListener('click', () => {
+      fileInput.click();
+    });
+  
+    document.getElementById('scanQRCodeButton').addEventListener('click', async () => {
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        try {
+          await scanQRCodeHandler();
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        alert('This feature is only available on mobile devices.');
+      }
+    });
+  }
 
 window.onload = init;

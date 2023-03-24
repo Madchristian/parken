@@ -1,0 +1,112 @@
+<!--parken.html-->
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Parken</title>
+    <!-- Verlinken Sie die Bootstrap-Dateien -->
+    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.4/dist/tesseract.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script type="module" src="./src/js/positionandsave.js"></script>
+    <script type="module" src="./src/js/scanlicenseplate.js"></script>
+    <script type="module" src="./src/js/spinner.js"></script>
+    <script type="module" src="./src/js/scanqrcodeandroid.js"></script>
+    <script type="module" src="./src/js/scanqrcodehandler.js"></script>
+    <script type="module" src="./src/js/scanqrcodeios.js"></script>
+    <script type="module" src="./src/js/main.js"></script>
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    
+    <style>
+      /* Style the spinner to be white */
+      .spinner-border {
+        border-top-color: #fff;
+        border-right-color: #fff;
+        border-bottom-color: #fff;
+        border-left-color: rgba(255, 255, 255, 0.2);
+      }
+    </style>
+    
+
+
+  </head>
+  <body>
+    <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">cstrube.de</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                    <a class="nav-link" href="index.html">Statistik</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="parkplatz.html">Übersicht</a>
+                  </li>
+                  
+                  <li class="nav-item">
+                    <a class="nav-link active" href="parken.html">Parken</a>
+                  </li>
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      Links
+                    </a>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="#">Schlüsseltresor</a></li>
+                      <li><a class="dropdown-item" href="#">Another action</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                  </li>
+                </ul>
+                <form class="d-flex" role="search">
+                  <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                  <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+              </div>
+            </div>
+          </nav>
+          <div class="container text-center my-5">
+            <div class="d-flex flex-column justify-content-between align-items-center h-100">
+              <button id="positionButton" type="button" class="btn btn-outline-warning btn-lg flex-grow-1">Position</button>
+              <button id="scanLicensePlateButton" type="button" class="btn btn-outline-info btn-lg flex-grow-1 my-5">Kennzeichen scannen</button>
+              <button id="scanQRCodeButton" type="button" class="btn btn-outline-success btn-lg flex-grow-1">QR Code scannen</button>
+              <div class="progress d-none w-30" style="height: 30px;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+          
+          
+            <div class="col col-lg-2"></div>
+            <div id="qrCodeContainer">
+              <canvas id="qrCodeCanvas"></canvas>
+              <img id="qrCodeImage" src="./pics/qrcode.jpg" style="display: none;">
+            </div>
+          </div>
+          
+
+            </div>
+          </div>
+          <input id="qrCodeInput" type="file" accept="image/*;capture=environment" style="display:none;" onchange="processQRCode(this)">
+          <input id="licensePlateInput" type="file" accept="image/*" capture="camera" style="display:none;" onchange="processImage(this)">
+          <div class="container-fluid">
+          <script src="./js/bootstrap.min.js"></script>
+        </body>
+
+    <script>
+      // Installieren Sie zuerst die "tesseract.js"-Bibliothek über npm:
+// Wählen Sie das HTML-Element aus, das das Bild enthält
+const imageElement = document.getElementById('qrCodeImage');
+const qrCodeButton = document.getElementById('qrCodeButton');
+const fileInput = document.getElementById('licensePlateInput');
+// Fügen Sie einen Event-Listener hinzu, um auf Änderungen im Dateiauswahldialog zu reagieren
+
+    </script>
+    
+
+</html>

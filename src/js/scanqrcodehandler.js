@@ -1,26 +1,14 @@
-// scanqecodehandler.js
-
-import { scanQRCodeAndroid } from './scanqrcodeandroid';
+import { scanQRCodeAndroid } from './scanqrcodeandroid.js';
 import { scanQRCodeiOS } from './scanqrcodeios.js';
+import { getLocation } from './positionandsave.js';
 
-async function scanQRCodeHandler() {
+export async function scanQRCodeHandler() {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  let qrCodeData;
   if (isIOS) {
-    await scanQRCodeiOS();
+    qrCodeData = await scanQRCodeiOS();
   } else {
-    const qrCodeData = await scanQRCodeAndroid();
-    processQRCode(qrCodeData);
+    qrCodeData = await scanQRCodeAndroid();
   }
+  processQRCode(qrCodeData);
 }
-
-function saveData(licensePlate) {
-  // ...
-}
-
-document.getElementById('scanQRCodeButton').addEventListener('click', async () => {
-  try {
-    await scanQRCodeHandler();
-  } catch (error) {
-    console.error(error);
-  }
-});
