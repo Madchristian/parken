@@ -1,16 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Parkplatz</title>
+    <title>Position</title>
     <!-- Verlinken Sie die Bootstrap-Dateien -->
     <script src="./node_modules/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>
     <script src="./src/js/position.js"></script>
+    <script src="./src/js/qrcode.js"></script>
+
     <link rel="stylesheet" href="./css/bootstrap.min.css">
     <script src="./js/bootstrap.min.js"></script>
-   
+    <style>
+      /* Style the spinner to be white */
+      .spinner-border {
+        border-top-color: #fff;
+        border-right-color: #fff;
+        border-bottom-color: #fff;
+        border-left-color: rgba(255, 255, 255, 0.2);
+      }
+    </style>
+    
 
 
   </head>
@@ -52,42 +63,93 @@
               </div>
             </div>
           </nav>
+          <div class="container text-center my-5">
+            <div class="row justify-content-md-center align-items-center">
+              <div class="col-md-auto">
+                <button type="button" onclick="getLocation()" class="btn btn-outline-warning btn-lg">Position</button>
+              </div>
+              <div class="col-md-auto">
+                <button type="button" onclick="document.getElementById('licensePlateInput').click();" class="btn btn-outline-info btn-lg">Kennzeichen</button>
+              </div>
+              <div class="col-md-auto">
+                <button type="button" onclick="openCamera()" class="btn btn-outline-success btn-lg">QR</button>
+              </div>
+            </div>
+            <div class="row justify-content-md-center">
+              <div class="col col-lg-2"></div>
+              <div class="col-md-auto">
+                <div class="spinner-border text-primary d-none" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+              <div class="col col-lg-2"></div>
+              <div id="image"></div>
 
-
-          <button onclick="getLocation()">Get Location</button>
-  
-          <button onclick="document.getElementById('licensePlateInput').click();">Kennzeichen aufnehmen</button>
+            </div>
+          </div>
+          
+          <input id="qrCodeInput" type="file" accept="image/*;capture=environment" style="display:none;" onchange="processQRCode(this)">
           <input id="licensePlateInput" type="file" accept="image/*" capture="camera" style="display:none;" onchange="processImage(this)">
     </body>
 
     <script>
-      async function processImage(input) {
-        const imageFile = input.files[0];
-    
-        // Führe die OCR auf dem aufgenommenen Foto aus
-        const result = await Tesseract.recognize(imageFile, 'deu', { logger: console.log });
-    
-        // Speichere das erkannte Kennzeichen zusammen mit den GPS-Daten
-        const licensePlate = result.data.text.trim();
-        console.log('Erkanntes Kennzeichen:', licensePlate);
-        getLocation(licensePlate);
-      }
-    
-      // Diese Funktion sollte die erkannten Daten (z.B. Kennzeichen und GPS-Daten) an Ihren Server senden, um sie in der MongoDB-Datenbank zu speichern.
-    async function saveData(licensePlate, latitude, longitude) {
-      // Definieren Sie die URL für Ihren API-Endpunkt
-      const apiUrl = "https://parken.cstrube.de/apiv3/save-data";
+      // Installieren Sie zuerst die "tesseract.js"-Bibliothek über npm:
+// Wählen Sie das HTML-Element aus, das das Bild enthält
+const imageElement = document.getElementById('image');
 
-      // Erstellen Sie ein Objekt mit den Daten, die an Ihren Server gesendet werden sollen
-      const data = {
-        licensePlate: licensePlate,
-        latitude: latitude,
-        longitude: longitude
-      };
+// Wählen Sie das HTML-Element aus, das den Dateiauswahldialog auslöst
+const fileInput = document.getElementById('licensePlateInput');
 
-      try {
-        // Senden Sie die Daten an Ihren API-Endpunkt
-      const response = await fetch(apiUrl, {
+// Fügen Sie einen Event-Listener hinzu, um auf Änderungen im Dateiauswahldialog zu reagieren
+fileInput.addEventListener('change', event => {
+  // Überprüfen Sie, ob eine Datei ausgewählt wurde
+  if (event.target.files.length > 0) {
+    // Lesen Sie die ausgewählte Datei ein und zeigen Sie sie im Bild-Element an
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      imageElement.src = reader.result;
+    };
+
+    // Rufen Sie die "scanImage()" Funktion auf, um das Bild zu scannen
+    scanImage(file).catch(error => {
+      console.error(error);
+    });
+  }
+});
+
+function processImage(imageFile) {
+  // Konvertieren Sie das Bild in ein Textdokument mit Tesseract OCR
+  showSpinner(); // Anzeigen des Ladebalkens
+  Tesseract.recognize(imageFile, {
+    lang: 'deu', // Definieren Sie die Sprache des zu scannenden Texts
+    tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ0123456789', // Nur diese Zeichen werden erlaubt
+    tessedit_pageseg_mode: 10, // Passen Sie die Größe des OCR-Fensters an
+    lstm_choice_mode: 1, // Verwenden Sie das "lstm" Trainingsmodell
+  }).then(result => {
+    // Geben Sie den erkannten Text aus
+    console.log(result.text);
+    hideSpinner(); // Ausblenden des Ladebalkens
+    // Verarbeiten Sie den erkannten Text weiter, z. B. speichern Sie ihn in einer Datenbank oder wenden Sie eine weitere Textverarbeitung darauf an
+  }).catch(error => {
+    console.error(error);
+    hideSpinner(); // Ausblenden des Ladebalkens
+  });
+}
+
+
+async function saveData(licensePlate, latitude, longitude) {
+  const apiUrl = "https://parken.cstrube.de/apiv3/save-data";
+  const data = {
+    licensePlate: licensePlate,
+    latitude: latitude,
+    longitude: longitude
+  };
+  showSpinner(); // Anzeigen des Ladebalkens
+
+  try {
+    const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -95,36 +157,53 @@
       body: JSON.stringify(data)
     });
 
-    // Überprüfen Sie den Status des Requests und verarbeiten Sie die Antwort
     if (response.ok) {
       const jsonResponse = await response.json();
       console.log("Data saved successfully:", jsonResponse);
+
+      hideSpinner(); // Ausblenden des Ladebalkens
+      const swoosh = new Audio("/sound/swoosh.mp3");
+      swoosh.play();
     } else {
       console.error("Error saving data:", response.status, response.statusText);
+      const errorsound = new Audio("/sound/error.mp3");
+      errorsound.play();
+      hideSpinner(); // Ausblenden des Ladebalkens
     }
   } catch (error) {
     console.error("Error sending data to server:", error);
+    hideSpinner(); // Ausblenden des Ladebalkens
   }
 }
 
-    
-      function getLocation(licensePlate) {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(position => showPosition(position, licensePlate));
-        } else {
-          alert("Geolocation is not supported by this browser.");
-        }
-      }
-    
-      function showPosition(position, licensePlate) {
-        // Hier können Sie die Position an Ihren Bot senden
-        var latitude = position.coords.latitude;
-        var longitude = position.coords.longitude;
-        console.log("Latitude: " + latitude + ", Longitude: " + longitude);
-    
-        // Speichere die Daten (Kennzeichen, Breitengrad und Längengrad)
-        saveData(licensePlate, latitude, longitude);
-      }
+
+function getLocation() {
+  const licensePlate = document.getElementById('licensePlate').value;
+  if (navigator.geolocation) {
+    showSpinner(); // Anzeigen des Ladebalkens
+    navigator.geolocation.getCurrentPosition(position => {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+      saveData(licensePlate, latitude, longitude).catch(error => {
+        console.error(error);
+      }).finally(() => {
+        hideSpinner(); // Ausblenden des Ladebalkens unabhängig davon, ob das Speichern erfolgreich war oder nicht
+      });
+    });
+  } else {
+    alert("Geolocation is not supported by this browser.");
+  }
+}
+
+function showSpinner() {
+  document.querySelector('.spinner-border').classList.remove('d-none');
+}
+
+function hideSpinner() {
+  document.querySelector('.spinner-border').classList.add('d-none');
+}
+
     </script>
     
 
