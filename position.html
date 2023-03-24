@@ -8,7 +8,11 @@
     <script src="./node_modules/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>
     <script src="./src/js/position.js"></script>
-    <script src="./src/js/qrcode.js"></script>
+    <script src="./src/js/licensePlate.js"></script>
+    <script src="./src/js/camera.js"></script>
+    <script src="./src/js/spinner.js"></script>
+    <script src="./src/js/navbar.js"></script>
+    <script src="./src/js/main.js"></script>
 
     <link rel="stylesheet" href="./css/bootstrap.min.css">
     <script src="./js/bootstrap.min.js"></script>
@@ -72,7 +76,9 @@
                 <button type="button" onclick="document.getElementById('licensePlateInput').click();" class="btn btn-outline-info btn-lg">Kennzeichen</button>
               </div>
               <div class="col-md-auto">
-                <button type="button" onclick="openCamera()" class="btn btn-outline-success btn-lg">QR</button>
+                <button id="qrCodeButton" type="button" onclick="openCamera()" class="btn btn-outline-success btn-lg">QR</button>
+
+
               </div>
             </div>
             <div class="row justify-content-md-center">
@@ -83,11 +89,15 @@
                 </div>
               </div>
               <div class="col col-lg-2"></div>
-              <div id="image"></div>
+              <div id="qrCodeContainer">
+                <canvas id="qrCodeCanvas"></canvas>
+                <img id="qrCodeImage" src="./pics/qrcode.jpg" style="display: none;">
+              </div>
+              
 
             </div>
           </div>
-          
+          <input id="licensePlateInputQR" type="file" accept="image/*" capture="camera" style="display:none;" onchange="processImage(this)">
           <input id="qrCodeInput" type="file" accept="image/*;capture=environment" style="display:none;" onchange="processQRCode(this)">
           <input id="licensePlateInput" type="file" accept="image/*" capture="camera" style="display:none;" onchange="processImage(this)">
     </body>
@@ -95,8 +105,9 @@
     <script>
       // Installieren Sie zuerst die "tesseract.js"-Bibliothek über npm:
 // Wählen Sie das HTML-Element aus, das das Bild enthält
-const imageElement = document.getElementById('image');
-
+const imageElement = document.getElementById('qrCodeImage');
+const qrCodeButton = document.getElementById('qrCodeButton');
+qrCodeButton.addEventListener('click', scanQRCodeHandler);
 // Wählen Sie das HTML-Element aus, das den Dateiauswahldialog auslöst
 const fileInput = document.getElementById('licensePlateInput');
 
@@ -203,6 +214,13 @@ function showSpinner() {
 function hideSpinner() {
   document.querySelector('.spinner-border').classList.add('d-none');
 }
+
+
+function openCamera() {
+  const qrCodeInput = document.getElementById('qrCodeInput');
+  qrCodeInput.click();
+}
+
 
     </script>
     

@@ -1,93 +1,50 @@
-// Wählen Sie das HTML-Element aus, das das Bild enthält
-const imageElement = document.getElementById('image');
-
-// Wählen Sie das HTML-Element aus, das den Dateiauswahldialog auslöst
-const fileInput = document.getElementById('licensePlateInput');
-
-// Fügen Sie einen Event-Listener hinzu, um auf Änderungen im Dateiauswahldialog zu reagieren
-fileInput.addEventListener('change', event => {
-  // Überprüfen Sie, ob eine Datei ausgewählt wurde
-  if (event.target.files.length > 0) {
-    // Lesen Sie die ausgewählte Datei ein und zeigen Sie sie im Bild-Element an
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      imageElement.src = reader.result;
-    };
-
-    // Rufen Sie die "scanImage()" Funktion auf, um das Bild zu scannen
-    scanImage(file).catch(error => {
-      console.error(error);
-    });
-  }
-});
-
-function processImage(imageFile) {
-  // Konvertieren Sie das Bild in ein Textdokument mit Tesseract OCR
-  showSpinner(); // Anzeigen des Ladebalkens
-  Tesseract.recognize(imageFile, {
-    lang: 'deu', // Definieren Sie die Sprache des zu scannenden Texts
-    tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ0123456789', // Nur diese Zeichen werden erlaubt
-    tessedit_pageseg_mode: 10, // Passen Sie die Größe des OCR-Fensters an
-    lstm_choice_mode: 1, // Verwenden Sie das "lstm" Trainingsmodell
-  }).then(result => {
-    // Geben Sie den erkannten Text aus
-    console.log(result.text);
-    hideSpinner(); // Ausblenden des Ladebalkens
-    // Verarbeiten Sie den erkannten Text weiter, z. B. speichern Sie ihn in einer Datenbank oder wenden Sie eine weitere Textverarbeitung darauf an
-  }).catch(error => {
-    console.error(error);
-    hideSpinner(); // Ausblenden des Ladebalkens
-  });
-}
-
-function onOpenCvReady() {
-  console.log('OpenCV is ready');
-}
-async function scanQRCode() {
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-  const video = document.createElement('video');
-  video.autoplay = true;
-
-  const constraints = {
-    video: { facingMode: 'environment' }
+async function saveData(licensePlate, latitude, longitude) {
+  const apiUrl = "https://parken.cstrube.de/apiv3/save-data";
+  const data = {
+    licensePlate: licensePlate,
+    latitude: latitude,
+    longitude: longitude
   };
-  navigator.mediaDevices.getUserMedia(constraints)
-    .then(stream => {
-      video.srcObject = stream;
-    })
-    .catch(error => {
-      console.error(error);
+  showSpinner(); // Anzeigen des Ladebalkens
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
     });
 
-  return new Promise((resolve, reject) => {
-    const scanQR = () => {
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      const code = jsQR(imageData.data, imageData.width, imageData.height);
-      if (code) {
-        resolve(code.data);
-      } else {
-        requestAnimationFrame(scanQR);
-      }
-    };
-    requestAnimationFrame(scanQR);
-  });
+    if (response.ok) {
+      const jsonResponse = await response.json();
+      console.log("Data saved successfully:", jsonResponse);
+
+      hideSpinner(); // Ausblenden des Ladebalkens
+      const swoosh = new Audio("/sound/swoosh.mp3");
+      swoosh.play();
+    } else {
+      console.error("Error saving data:", response.status, response.statusText);
+      const errorsound = new Audio("/sound/error.mp3");
+      errorsound.play();
+      hideSpinner(); // Ausblenden des Ladebalkens
+    }
+  } catch (error) {
+    console.error("Error sending data to server:", error);
+    hideSpinner(); // Ausblenden des Ladebalkens
+  }
 }
 
-async function getLocation() {
+
+function getLocation() {
   const licensePlate = document.getElementById('licensePlate').value;
   if (navigator.geolocation) {
     showSpinner(); // Anzeigen des Ladebalkens
-    navigator.geolocation.getCurrentPosition(async position => {
+    navigator.geolocation.getCurrentPosition(position => {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
       console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-      const qrCodeData = await scanQRCode();
-      console.log(`QR Code: ${qrCodeData}`);
-      saveData(licensePlate, latitude, longitude, qrCodeData).catch(error => {
+      saveData(licensePlate, latitude, longitude).catch(error => {
         console.error(error);
       }).finally(() => {
         hideSpinner(); // Ausblenden des Ladebalkens unabhängig davon, ob das Speichern erfolgreich war oder nicht
@@ -96,4 +53,12 @@ async function getLocation() {
   } else {
     alert("Geolocation is not supported by this browser.");
   }
+}
+
+function showSpinner() {
+  document.querySelector('.spinner-border').classList.remove('d-none');
+}
+
+function hideSpinner() {
+  document.querySelector('.spinner-border').classList.add('d-none');
 }
