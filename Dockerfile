@@ -7,10 +7,11 @@ RUN apt-get update && apt-get install -y git
 WORKDIR /usr/local/apache2/htdocs/
 
 # Copy the files from the temporary directory to the target directory
-# COPY . /usr/local/apache2/htdocs/
+COPY . /usr/local/apache2/htdocs/
 
 # Update httpd.conf
 RUN sed -i 's/Options Indexes FollowSymLinks/Options Indexes FollowSymLinks\nAddType application\/javascript .js/' /usr/local/apache2/conf/httpd.conf
+RUN echo 'ServerName parken.cstrube.de' >> /usr/local/apache2/conf/httpd.conf
 RUN echo 'AddType text/css .css' >> /usr/local/apache2/conf/httpd.conf
 # Update httpd.conf for CORS^
 RUN echo 'Header set Access-Control-Allow-Origin "*"' >> /usr/local/apache2/conf/httpd.conf

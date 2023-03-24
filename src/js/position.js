@@ -32,3 +32,6 @@ function capture() {
       console.log(error);
     });
 }
+function onOpenCvReady() {
+  console.log('OpenCV is ready');
+}

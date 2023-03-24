@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Position</title>
     <!-- Verlinken Sie die Bootstrap-Dateien -->
+    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
     <link rel="stylesheet" href="./css/bootstrap.min.css">
     <script src="./js/bootstrap.min.js"></script>
-    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>
-    <script src="./js/opencv.js"></script>
     <script src="./src/js/position.js"></script>
     <script async src="https://docs.opencv.org/master/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
 
@@ -73,56 +73,34 @@
           
           <input id="licensePlateInput" type="file" accept="image/*" capture="camera" style="display:none;" onchange="processImage(this)">
     </body>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>
+
     <script>
-      async function processImage(input) {
-      const imageFile = input.files[0];
+async function processImage(input) {
+  const imageFile = input.files[0];
+  const img = await cv.imreadAsync(imageFile);
+  const gray = await cv.cvtColorAsync(img, cv.COLOR_RGBA2GRAY);
+  const edges = await cv.CannyAsync(gray, 50, 200, 3, false);
+  const imageData = await cv.imencodeAsync('.jpg', edges);
+  const result = await Tesseract.recognize(imageData.data, 'deu', { logger: console.log });
+  const licensePlate = result.data.text.trim();
+  getLocation(licensePlate);
+}
 
-      // Lade das aufgenommene Foto mit OpenCV
-      const img = await cv.imreadAsync(imageFile);
-
-      // Konvertiere das Bild in Graustufen
-      const gray = await cv.cvtColorAsync(img, cv.COLOR_RGBA2GRAY);
-
-      // Erhöhe die Konturen
-      const edges = await cv.CannyAsync(gray, 50, 200, 3, false);
-
-      // Konvertiere das Bild zurück in ein ImageData-Objekt
-      const imageData = await cv.imencodeAsync('.jpg', edges);
-
-      // Wende die OCR auf das vorverarbeitete Bild an
-      const result = await Tesseract.recognize(imageData.data, 'deu', { logger: console.log });
-
-      // Speichere das erkannte Kennzeichen zusammen mit den GPS-Daten
-      const licensePlate = result.data.text.trim();
-      console.log('Erkanntes Kennzeichen:', licensePlate);
-      getLocation(licensePlate);
-    }
-
-    
-      // Diese Funktion sollte die erkannten Daten (z.B. Kennzeichen und GPS-Daten) an Ihren Server senden, um sie in der MongoDB-Datenbank zu speichern.
-    async function saveData(licensePlate, latitude, longitude) {
-      // Definieren Sie die URL für Ihren API-Endpunkt
-      const apiUrl = "https://api.cstrube.de/apiv3/save-data";
-
-      // Erstellen Sie ein Objekt mit den Daten, die an Ihren Server gesendet werden sollen
-      const data = {
-        licensePlate: licensePlate,
-        latitude: latitude,
-        longitude: longitude
-      };
-
-      try {
-        // Senden Sie die Daten an Ihren API-Endpunkt
-      const response = await fetch(apiUrl, {
+async function saveData(licensePlate, latitude, longitude) {
+  const apiUrl = "https://parken.cstrube.de/apiv3/save-data";
+  const data = {
+    licensePlate,
+    latitude,
+    longitude
+  };
+  try {
+    const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(data)
     });
-
-    // Überprüfen Sie den Status des Requests und verarbeiten Sie die Antwort
     if (response.ok) {
       const jsonResponse = await response.json();
       console.log("Data saved successfully:", jsonResponse);
@@ -130,28 +108,25 @@
       console.error("Error saving data:", response.status, response.statusText);
     }
   } catch (error) {
-    console.error("Error sending data to server:", error);
+    console.error(error);
   }
 }
 
-    
-      function getLocation(licensePlate) {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(position => showPosition(position, licensePlate));
-        } else {
-          alert("Geolocation is not supported by this browser.");
-        }
-      }
-    
-      function showPosition(position, licensePlate) {
-        // Hier können Sie die Position an Ihren Bot senden
-        var latitude = position.coords.latitude;
-        var longitude = position.coords.longitude;
-        console.log("Latitude: " + latitude + ", Longitude: " + longitude);
-    
-        // Speichere die Daten (Kennzeichen, Breitengrad und Längengrad)
-        saveData(licensePlate, latitude, longitude);
-      }
+function getLocation(licensePlate) {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => showPosition(position, licensePlate));
+  } else {
+    alert("Geolocation is not supported by this browser.");
+  }
+}
+
+function showPosition(position, licensePlate) {
+  const latitude = position.coords.latitude;
+  const longitude = position.coords.longitude;
+  console.log("Latitude: " + latitude + ", Longitude: " + longitude);
+  saveData(licensePlate, latitude, longitude);
+}
+
     </script>
     
 
