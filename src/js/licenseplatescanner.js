@@ -1,25 +1,27 @@
 // licensePlateScanner.js
-import { getLocation } from './positionandsave.js';
-import { showSpinner, hideSpinner } from './spinner.js';
 //import { Tesseract } from '../../node_modules/tesseract.js/dist/tesseract.min.js';
-import { createWorker } from 'tesseract.js';
+import { getLocation } from "./positionandsave.js";
+import { showSpinner, hideSpinner } from "./spinner.js";
 
 export async function scanLicensePlate(imageFile) {
   showSpinner();
 
-  const worker = createWorker({
+  // Erstellen Sie einen Worker
+  const worker = Tesseract.createWorker({
     logger: (m) => console.log(m),
   });
 
   try {
+    // Initialisieren Sie den Worker
     await worker.load();
-    await worker.loadLanguage('deu');
-    await worker.initialize('deu');
+    await worker.loadLanguage("deu");
+    await worker.initialize("deu");
 
+    // Erkennen Sie das Nummernschild
     const {
       data: { text },
     } = await worker.recognize(imageFile, {
-      tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ0123456789-',
+      tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ0123456789-",
     });
 
     console.log(text);
@@ -28,12 +30,12 @@ export async function scanLicensePlate(imageFile) {
 
     const licensePlate = text;
     getLocation(licensePlate);
-
   } catch (error) {
     console.error(error);
     hideSpinner();
   }
 }
+
 
 
 
