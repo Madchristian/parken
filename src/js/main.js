@@ -2,8 +2,8 @@
 import { getLocation } from './positionandsave.js';
 import { showSpinner, hideSpinner } from './spinner.js';
 import { scanQRCodeHandler} from './scanqrcodehandler.js';
-import { processImage } from './scanlicenseplate.js';
-export const fileInput = document.getElementById('licensePlateInput');
+import { scanImage, licensePlateFileInput } from './licenseplatescanner.js';
+
 export {
   getLocation,
   showSpinner,
@@ -20,15 +20,16 @@ function init() {
     });
   
     document.getElementById('scanLicensePlateButton').addEventListener('click', () => {
-      fileInput.addEventListener('change', async () => {
-        try {
-          await scanImage();
-        } catch (error) {
-          console.error(error);
-        }
+        licensePlateFileInput.addEventListener('change', async () => {
+          try {
+            await scanImage(licensePlateFileInput);
+          } catch (error) {
+            console.error(error);
+          }
+        });
+        licensePlateFileInput.click();
       });
-      fileInput.click();
-    });
+      
   
     document.getElementById('scanQRCodeButton').addEventListener('click', async () => {
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
