@@ -2,7 +2,7 @@
 import { getLocation } from './positionandsave.js';
 import { showSpinner, hideSpinner } from './spinner.js';
 import { scanQRCodeHandler} from './scanqrcodehandler.js';
-import { scanImage, licensePlateFileInput } from './licenseplatescanner.js';
+import { processImage, scanLicensePlate } from './licensePlateScanner.js';
 
 export {
   getLocation,
@@ -22,7 +22,7 @@ function init() {
     document.getElementById('scanLicensePlateButton').addEventListener('click', () => {
         licensePlateFileInput.addEventListener('change', async () => {
           try {
-            await scanImage(licensePlateFileInput);
+            await scanLicensePlate(licensePlateFileInput);
           } catch (error) {
             console.error(error);
           }

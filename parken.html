@@ -5,10 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Parken</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.0.2/tesseract.min.js" integrity="sha512-e7aOgT2ME/uqH5qjwEyxbIQGSmlYjvCquC1r8wOCd0H9ejb1v+gg53pGyRnyFG+CLvk9GsmLz7RqSRwoRF5EPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <!-- Verlinken Sie die Bootstrap-Dateien -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>    <!-- Verlinken Sie die Bootstrap-Dateien -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="module" src="./src/js/licenseplatescanner.js"></script>
+    <script type="module" src="./src/js/licensePlateScanner.js"></script>
     <script type="module" src="./src/js/positionandsave.js"></script>
     <script type="module" src="./src/js/spinner.js"></script>
     <script type="module" src="./src/js/scanqrcodeandroid.js"></script>
@@ -114,48 +113,6 @@ const imageElement = document.getElementById('qrCodeImage');
 const scanQRCodeButton = document.getElementById('scanQRCodeButton');
 
 // Fügen Sie einen Event-Listener hinzu, um auf Änderungen im Dateiauswahldialog zu reagieren
-
-
-const worker = Tesseract.createWorker({
-  workerPath: "https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.0.2/worker.min.js",
-  logger: function(m){console.log(m);}
-});
-
-const recognize = async ({ target: { files } }) => {
-  document.getElementById("imgInput").src = URL.createObjectURL(files[0]);
-  const worker = await Tesseract.createWorker({
-    // corePath: '/tesseract-core-simd.wasm.js',
-    workerPath: "/dist/worker.dev.js"
-  });
-  await worker.loadLanguage('eng');
-  await worker.initialize('eng');
-
-  await worker.initialize();
-  const ret = await worker.recognize(files[0], {rotateAuto: true}, {imageColor: true, imageGrey: true, imageBinary: true});
-  document.getElementById("imgOriginal").src = ret.data.imageColor;
-  document.getElementById("imgGrey").src = ret.data.imageGrey;
-  document.getElementById("imgBinary").src = ret.data.imageBinary;
-}
-
-const elm = document.getElementById('uploader');
-elm.addEventListener('change', recognize);
-
-function processImage(input) {
-  const file = input.files[0];
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    const img = new Image();
-    img.onload = function() {
-      // do something with the image, e.g. display it
-      const imageElement = document.getElementById('licensePlateImage');
-      imageElement.src = this.src;
-    }
-    img.src = event.target.result;
-  }
-  reader.readAsDataURL(file);
-}
-
-
     </script>
     
 

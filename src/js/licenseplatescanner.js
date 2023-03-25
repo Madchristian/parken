@@ -1,29 +1,55 @@
 // licensePlateScanner.js
 import { getLocation } from './positionandsave.js';
 import { showSpinner, hideSpinner } from './spinner.js';
+//import { Tesseract } from '../../node_modules/tesseract.js/dist/tesseract.min.js';
+import { createWorker } from 'tesseract.js';
 
-export const licensePlateFileInput = document.getElementById('licensePlateInput');
+export async function scanLicensePlate(imageFile) {
+  showSpinner();
 
-export async function scanImage(inputElement) {
-  console.log('scanImage function called');
-  const fileInput = document.getElementById('licensePlateInput');
-  if (fileInput.files.length === 0) {
-    console.error('No image selected');
-    return;
-  }
-  const imageFile = fileInput.files[0];
-  showSpinner(); // display loading spinner
-  // use Tesseract OCR to convert image to text
-  await worker.load();
-  await worker.loadLanguage('deu');
-  await worker.initialize('deu');
-  const { data: { text } } = await worker.recognize(imageFile, {
-    tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ0123456789-'
+  const worker = createWorker({
+    logger: (m) => console.log(m),
   });
-  console.log(text); // log recognized text
-  await worker.terminate();
-  hideSpinner(); // hide loading spinner
-  const licensePlate = text;
-  getLocation(licensePlate); // call getLocation() function with license plate
-  // process recognized text further, e.g. save it in a database or apply further text processing
+
+  try {
+    await worker.load();
+    await worker.loadLanguage('deu');
+    await worker.initialize('deu');
+
+    const {
+      data: { text },
+    } = await worker.recognize(imageFile, {
+      tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ0123456789-',
+    });
+
+    console.log(text);
+    await worker.terminate();
+    hideSpinner();
+
+    const licensePlate = text;
+    getLocation(licensePlate);
+
+  } catch (error) {
+    console.error(error);
+    hideSpinner();
+  }
 }
+
+
+
+
+export function processImage(input) {
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const img = new Image();
+      img.onload = function() {
+        // do something with the image, e.g. display it
+        const imageElement = document.getElementById('licensePlateImage');
+        imageElement.src = this.src;
+      }
+      img.src = event.target.result;
+    }
+    reader.readAsDataURL(file);
+  }
+  

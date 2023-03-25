@@ -55,10 +55,3 @@ export function getLocation(licensePlate) {
   }
 }
 
-function showSpinner() {
-  document.querySelector('.progress').classList.remove('d-none');
-}
-
-function hideSpinner() {
-  document.querySelector('.progress').classList.add('d-none');
-}
