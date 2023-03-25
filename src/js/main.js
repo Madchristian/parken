@@ -2,7 +2,7 @@
 import { getLocation } from './positionandsave.js';
 import { showSpinner, hideSpinner } from './spinner.js';
 import { scanQRCodeHandler} from './scanqrcodehandler.js';
-import { scanImage } from './scanlicenseplate.js';
+import { processImage } from './scanlicenseplate.js';
 export const fileInput = document.getElementById('licensePlateInput');
 export {
   getLocation,
@@ -19,7 +19,7 @@ function init() {
       }
     });
   
-    document.getElementById('scanLicensePlateButton').addEventListener('click', async () => {
+    document.getElementById('scanLicensePlateButton').addEventListener('click', () => {
       fileInput.addEventListener('change', async () => {
         try {
           await scanImage();
@@ -27,9 +27,6 @@ function init() {
           console.error(error);
         }
       });
-    }); // hier fehlte eine Klammer
-  
-    document.getElementById('scanLicensePlateButton').addEventListener('click', () => {
       fileInput.click();
     });
   
@@ -44,7 +41,10 @@ function init() {
       } else {
         alert('This feature is only available on mobile devices.');
       }
-    });
+      
+    })
+      
   }
-
-window.onload = init;
+  
+  window.onload = init;
+  

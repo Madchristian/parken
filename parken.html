@@ -5,11 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Parken</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.0.2/tesseract.esm.min.js" integrity="sha512-e7aOgT2ME/uqH5qjwEyxbIQGSmlYjvCquC1r8wOCd0H9ejb1v+gg53pGyRnyFG+CLvk9GsmLz7RqSRwoRF5EPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Verlinken Sie die Bootstrap-Dateien -->
-    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.4/dist/tesseract.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://unpkg.com/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script type="module" src="./src/js/positionandsave.js"></script>
     <script type="module" src="./src/js/scanlicenseplate.js"></script>
     <script type="module" src="./src/js/spinner.js"></script>
@@ -17,7 +15,7 @@
     <script type="module" src="./src/js/scanqrcodehandler.js"></script>
     <script type="module" src="./src/js/scanqrcodeios.js"></script>
     <script type="module" src="./src/js/main.js"></script>
-    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    
     
     <style>
       /* Style the spinner to be white */
@@ -33,6 +31,19 @@
 
   </head>
   <body>
+    <div id="header"></div>
+    <script>
+      // fetch the contents of the header.html file
+      fetch('header.html')
+        .then(response => response.text())
+        .then(html => {
+          // insert the contents of the header.html file into the page
+          const headerElement = document.getElementById('header');
+          if (headerElement) {
+            headerElement.innerHTML = html;
+          }
+        });
+      </script>
     <div class="container-fluid">
         <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
             <div class="container-fluid">
@@ -74,12 +85,12 @@
           <div class="container text-center my-5">
             <div class="d-flex flex-column justify-content-between align-items-center h-100">
               <button id="positionButton" type="button" class="btn btn-outline-warning btn-lg flex-grow-1">Position</button>
-              <button id="scanLicensePlateButton" type="button" class="btn btn-outline-info btn-lg flex-grow-1 my-5">Kennzeichen scannen</button>
+              <button id="scanLicensePlateButton" type="button" class="btn btn-outline-info btn-lg flex-grow-1 my-5" onclick="scanImage()">Kennzeichen scannen</button>
               <button id="scanQRCodeButton" type="button" class="btn btn-outline-success btn-lg flex-grow-1">QR Code scannen</button>
               <div class="progress d-none w-30" style="height: 30px;">
                 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
               </div>
-            </div>
+         
           
           
             <div class="col col-lg-2"></div>
@@ -88,24 +99,43 @@
               <img id="qrCodeImage" src="./pics/qrcode.jpg" style="display: none;">
             </div>
           </div>
-          
-
-            </div>
           </div>
           <input id="qrCodeInput" type="file" accept="image/*;capture=environment" style="display:none;" onchange="processQRCode(this)">
-          <input id="licensePlateInput" type="file" accept="image/*" capture="camera" style="display:none;" onchange="processImage(this)">
+          <input id="licensePlateInput" type="file" accept="image/*" capture="camera" style="display:none;" onchange="scanImage()">
           <div class="container-fluid">
-          <script src="./js/bootstrap.min.js"></script>
         </body>
-
+      </div>
     <script>
-      // Installieren Sie zuerst die "tesseract.js"-Bibliothek über npm:
 // Wählen Sie das HTML-Element aus, das das Bild enthält
 const imageElement = document.getElementById('qrCodeImage');
-const qrCodeButton = document.getElementById('qrCodeButton');
+const scanQRCodeButton = document.getElementById('scanQRCodeButton');
 const fileInput = document.getElementById('licensePlateInput');
 // Fügen Sie einen Event-Listener hinzu, um auf Änderungen im Dateiauswahldialog zu reagieren
+const worker = Tesseract.createWorker({
+  corePath: '../../node_modules/tesseract.js-core/tesseract-core.wasm.js',
+  workerPath: "../../node_modules/tesseract.js/dist/worker.min.js",
+  logger: function(m){console.log(m);}
+});
 
+async function scanImage() {
+  if (fileInput.files.length === 0) {
+    console.error('No image selected');
+    return;
+  }
+  const imageFile = fileInput.files[0];
+  showSpinner(); // display loading spinner
+  // use Tesseract OCR to convert image to text
+  await worker.load();
+  await worker.loadLanguage('eng');
+  await worker.initialize('eng');
+  const { data: { text } } = await worker.recognize(imageFile);
+  console.log(text); // log recognized text
+  await worker.terminate();
+  hideSpinner(); // hide loading spinner
+  const licensePlate = text;
+  getLocation(licensePlate); // call getLocation() function with license plate
+  // process recognized text further, e.g. save it in a database or apply further text processing
+}
     </script>
     
 

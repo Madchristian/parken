@@ -7,8 +7,7 @@
     "fsevents": "^2.3.2",
     "jquery": "^3.6.4",
     "opencv-build": "^0.1.9",
-    "qrcode": "^1.5.1",
-    "tesseract.js": "^4.0.2"
+    "qrcode": "^1.5.1"
   },
   "name": "parken_webseite",
   "version": "1.0.0",

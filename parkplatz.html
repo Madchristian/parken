@@ -4,18 +4,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Übersicht</title>
-    <!-- Verlinken Sie die Bootstrap-Dateien -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://unpkg.com/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-    <link rel="stylesheet" href="./css/bootstrap.min.css">
-    <script src="./js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="./src/css/parkplatz-grid.css">
-    <script src="./node_modules/jquery/dist/jquery.js"></script>
-
-    <script src="./src/js/parkplatz.js"></script>
-
+     <link rel="stylesheet" href="./src/css/parkplatz-grid.css">
+     <script src="./src/js/parkplatz.js"></script>
   </head>
   <body>
+    <div id="header"></div>
+    <script>
+      // fetch the contents of the header.html file
+      fetch('header.html')
+        .then(response => response.text())
+        .then(html => {
+          // insert the contents of the header.html file into the page
+          const headerElement = document.getElementById('header');
+          if (headerElement) {
+            headerElement.innerHTML = html;
+          }
+        });
+      </script>
     <div class="container-fluid">
         <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
             <div class="container-fluid">

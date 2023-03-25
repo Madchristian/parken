@@ -5,21 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Statiskik</title>
     <meta charset="UTF-8">
-    <script>
-      // fetch the contents of the header.html file
-      fetch('header.html')
-        .then(response => response.text())
-        .then(html => {
-          // insert the contents of the header.html file into the page
-          const headerElement = document.getElementById('header');
-          headerElement.innerHTML = html;
-        });
-    </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="module" src="./src/js/main.js"></script>
-    <link rel="stylesheet" href="./css/bootstrap.css">
-      
   </head>
+  <div id="header"></div>
+  <script>
+    // fetch the contents of the header.html file
+    fetch('header.html')
+      .then(response => response.text())
+      .then(html => {
+        // insert the contents of the header.html file into the page
+        const headerElement = document.getElementById('header');
+        if (headerElement) {
+          headerElement.innerHTML = html;
+        }
+      });
+    </script>
   <body class="bg-dark">
     <div class="container-fluid">
       <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">

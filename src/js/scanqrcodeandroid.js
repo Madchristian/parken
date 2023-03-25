@@ -1,4 +1,5 @@
 import { getLocation } from './positionandsave.js';
+import { extractLicensePlate } from './extractLicensePlate.js';
 
 export async function scanQRCodeAndroid() {
   const constraints = {
@@ -18,12 +19,13 @@ export async function scanQRCodeAndroid() {
     video.srcObject.getTracks().forEach(track => track.stop());
     document.body.removeChild(video);
 
-    const licensePlate = extractLicensePlate(result.text); // extrahieren des Kennzeichens aus dem QR-Code-Text
-    getLocation(licensePlate); // getLocation() mit dem Kennzeichen aufrufen
-    
+    const licensePlate = extractLicensePlate(result.text); // extract license plate from QR code text
+    if (licensePlate) {
+      getLocation(licensePlate); // call getLocation() function with license plate
+    }
+
     return result.text;
   } catch (error) {
     console.error(error);
   }
 }
-
